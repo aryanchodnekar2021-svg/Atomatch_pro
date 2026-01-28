@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoMatch Pro - The Ultimate Collection</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Manrope:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-body: #050505;
+            --bg-card: #101010;
+            --accent: #d4af37; /* Platinum Gold */
+            --text-main: #ffffff;
+            --text-sec: #888888;
+            --glass: rgba(20, 20, 20, 0.7);
+            --border: rgba(255, 255, 255, 0.08);
+            --font-display: 'Syncopate', sans-serif;
+            --font-body: 'Manrope', sans-serif;
+            --ease: cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            font-family: var(--font-body);
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* --- Ambient Motion Background --- */
+        .ambient-bg {
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(circle at 50% 50%, rgba(212, 175, 55, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 20% 80%, rgba(50, 50, 80, 0.1) 0%, transparent 40%);
+            z-index: -1;
+            pointer-events: none;
+            transition: transform 0.2s ease-out;
+        }
+
+        .noise-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* --- Layout --- */
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+
+        /* --- Hero Section with Parallax --- */
+        .hero {
+            height: 40vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: clamp(2.5rem, 5vw, 5rem);
+            letter-spacing: -2px;
+            text-transform: uppercase;
+            background: linear-gradient(to bottom, #fff, #888);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 20px;
+            transform: translateZ(0); /* Hardware accel */
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: var(--accent);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            opacity: 0.8;
+        }
+
+        /* --- Floating Control Panel --- */
+        .control-panel {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 30px 40px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            position: sticky;
+            top: 20px;
+            z-index: 100;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            transition: transform 0.3s var(--ease);
+        }
+
+        .input-group { position: relative; }
+        
+        .input-group label {
+            display: block;
+            font-size: 0.75rem;
+            color: var(--text-sec);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        select {
+            width: 100%;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid #444;
+            color: white;
+            padding: 10px 0;
+            font-family: var(--font-body);
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        select:focus { outline: none; border-color: var(--accent); }
+        option { background: #111; color: white; }
+
+        /* Custom Range Slider */
+        .range-wrapper { width: 100%; }
+        
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 4px;
+            background: #333;
+            border-radius: 2px;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--accent);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.3); }
+
+        .range-value {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: var(--accent);
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* --- 3D Grid --- */
+        .results-header {
+            margin: 40px 0 20px 0;
+            font-size: 0.9rem;
+            color: var(--text-sec);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .results-header::after {
+            content: ''; height: 1px; background: #333; flex-grow: 1;
+        }
+
+        .car-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 40px;
+            perspective: 1000px; /* Enable 3D space */
+        }
+
+        /* --- Professional Card Design --- */
+        .car-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            height: 420px;
+            position: relative;
+            transform-style: preserve-3d; /* Key for 3D tilt */
+            transition: transform 0.1s linear, opacity 0.4s ease; /* Fast transform for mouse move */
+            opacity: 0; /* For entry animation */
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .card-inner {
+            width: 100%; height: 100%;
+            display: flex; flex-direction: column;
+        }
+
+        .img-container {
+            height: 60%;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .car-img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s var(--ease);
+        }
+
+        .car-card:hover .car-img { transform: scale(1.05); }
+
+        .overlay-gradient {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 50%;
+            background: linear-gradient(to top, var(--bg-card), transparent);
+        }
+
+        .badge {
+            position: absolute; top: 20px; left: 20px;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 6px 12px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: white;
+            z-index: 2;
+        }
+
+        .info-container {
+            padding: 25px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            z-index: 2;
+            background: var(--bg-card);
+        }
+
+        .car-title {
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            line-height: 1.2;
+            margin-bottom: 5px;
+            color: white;
+        }
+
+        .specs-row {
+            display: flex; gap: 15px;
+            font-size: 0.85rem; color: var(--text-sec);
+            margin-bottom: 15px;
+        }
+
+        .price-row {
+            display: flex; justify-content: space-between; align-items: flex-end;
+            border-top: 1px solid #222;
+            padding-top: 15px;
+        }
+
+        .price {
+            color: var(--accent);
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .action-icon {
+            width: 30px; height: 30px;
+            border-radius: 50%;
+            border: 1px solid #444;
+            display: flex; align-items: center; justify-content: center;
+            color: white;
+            transition: 0.3s;
+        }
+
+        .car-card:hover .action-icon {
+            background: white; color: black; border-color: white;
+        }
+
+        /* --- No Results --- */
+        .empty-state {
+            grid-column: 1 / -1;
+            padding: 60px;
+            text-align: center;
+            border: 1px dashed #333;
+            border-radius: 20px;
+            color: var(--text-sec);
+        }
+
+        /* Animation Keyframes */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 3rem; }
+            .control-panel { top: 0; border-radius: 0; border-left: none; border-right: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ambient-bg" id="ambientBg"></div>
+    <div class="noise-overlay"></div>
+
+    <div class="container">
+        <header class="hero" id="hero">
+            <h1 id="heroTitle">AutoMatch</h1>
+            <p>The Definitive Automotive Collection</p>
+        </header>
+
+        <div class="control-panel">
+            <div class="input-group">
+                <label>Category</label>
+                <select id="type" onchange="filterSystem()">
+                    <option value="">All Collections</option>
+                    <option value="Supercar">Supercar</option>
+                    <option value="Luxury">Luxury</option>
+                    <option value="SUV">SUV</option>
+                    <option value="Sedan">Sedan</option>
+                    <option value="Hatchback">Hatchback</option>
+                    <option value="Off-Road">Off-Road</option>
+                    <option value="Hypercar">Hypercar</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label>Investment Range</label>
+                <div class="range-wrapper">
+                    <input type="range" id="budgetRange" min="500000" max="50000000" step="500000" value="50000000" oninput="updateBudgetDisplay(this.value); filterSystem()">
+                    <div class="range-value">
+                        <span>Max</span>
+                        <span id="budgetValue">No Limit</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Powertrain</label>
+                <select id="fuel" onchange="filterSystem()">
+                    <option value="">Any</option>
+                    <option value="Petrol">Petrol</option>
+                    <option value="Diesel">Diesel</option>
+                    <option value="Electric">Electric</option>
+                    <option value="Hybrid">Hybrid</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="results-header">
+            <span id="countDisplay">0</span> Vehicles Available
+        </div>
+
+        <div class="car-grid" id="carGrid">
+            </div>
+
+        <div class="empty-state" id="emptyState" style="display:none">
+            <h3>No matches found in archive.</h3>
+            <p>Try expanding your budget or changing categories.</p>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. DATA: The Master Collection ---
+        const fleet = [
+            // BUDGET & CITY
+            { name: "Maruti Alto K10", type: "Hatchback", price: 399000, fuel: "Petrol", seats: 4 },
+            { name: "Renault Kwid", type: "Hatchback", price: 469000, fuel: "Petrol", seats: 5 },
+            { name: "Tata Tiago", type: "Hatchback", price: 565000, fuel: "Petrol", seats: 5 },
+            { name: "Maruti Swift", type: "Hatchback", price: 649000, fuel: "Petrol", seats: 5 },
+            { name: "Hyundai i20", type: "Hatchback", price: 704000, fuel: "Petrol", seats: 5 },
+            { name: "Tata Altroz", type: "Hatchback", price: 665000, fuel: "Petrol", seats: 5 },
+            
+            // COMPACT & MID SUV
+            { name: "Tata Punch", type: "SUV", price: 613000, fuel: "Petrol", seats: 5 },
+            { name: "Nissan Magnite", type: "SUV", price: 600000, fuel: "Petrol", seats: 5 },
+            { name: "Tata Nexon", type: "SUV", price: 815000, fuel: "Petrol", seats: 5 },
+            { name: "Maruti Brezza", type: "SUV", price: 834000, fuel: "Petrol", seats: 5 },
+            { name: "Hyundai Creta", type: "SUV", price: 1099000, fuel: "Petrol", seats: 5 },
+            { name: "Kia Seltos", type: "SUV", price: 1090000, fuel: "Diesel", seats: 5 },
+            { name: "Mahindra Thar", type: "Off-Road", price: 1125000, fuel: "Diesel", seats: 4 },
+            { name: "Maruti Jimny", type: "Off-Road", price: 1274000, fuel: "Petrol", seats: 4 },
+
+            // SEDANS
+            { name: "Honda City", type: "Sedan", price: 1180000, fuel: "Petrol", seats: 5 },
+            { name: "Volkswagen Virtus", type: "Sedan", price: 1155000, fuel: "Petrol", seats: 5 },
+            { name: "Skoda Slavia", type: "Sedan", price: 1163000, fuel: "Petrol", seats: 5 },
+            { name: "Hyundai Verna", type: "Sedan", price: 1100000, fuel: "Petrol", seats: 5 },
+
+            // BIG BOYS (SUV/MUV)
+            { name: "Mahindra Scorpio-N", type: "SUV", price: 1360000, fuel: "Diesel", seats: 7 },
+            { name: "Mahindra XUV700", type: "SUV", price: 1399000, fuel: "Petrol", seats: 7 },
+            { name: "Tata Safari", type: "SUV", price: 1619000, fuel: "Diesel", seats: 7 },
+            { name: "Toyota Innova Crysta", type: "MUV", price: 1999000, fuel: "Diesel", seats: 7 },
+            { name: "Toyota Fortuner", type: "SUV", price: 3343000, fuel: "Diesel", seats: 7 },
+            { name: "Jeep Compass", type: "SUV", price: 2069000, fuel: "Diesel", seats: 5 },
+
+            // ELECTRIC
+            { name: "Tata Nexon EV", type: "SUV", price: 1474000, fuel: "Electric", seats: 5 },
+            { name: "MG ZS EV", type: "SUV", price: 2200000, fuel: "Electric", seats: 5 },
+            { name: "Hyundai Ioniq 5", type: "SUV", price: 4595000, fuel: "Electric", seats: 5 },
+            { name: "Kia EV6", type: "SUV", price: 6095000, fuel: "Electric", seats: 5 },
+
+            // LUXURY
+            { name: "Mercedes-Benz C-Class", type: "Luxury", price: 6185000, fuel: "Diesel", seats: 5 },
+            { name: "BMW 3 Series", type: "Luxury", price: 7290000, fuel: "Petrol", seats: 5 },
+            { name: "Land Rover Defender", type: "Off-Road", price: 9700000, fuel: "Diesel", seats: 5 },
+            { name: "Volvo XC90", type: "Luxury", price: 10000000, fuel: "Hybrid", seats: 7 },
+            { name: "Toyota Vellfire", type: "MUV", price: 12000000, fuel: "Hybrid", seats: 7 },
+
+            // SUPERCARS & HYPERCARS
+            { name: "Porsche 911 Carrera", type: "Supercar", price: 18600000, fuel: "Petrol", seats: 4 },
+            { name: "Lamborghini Urus", type: "Supercar", price: 41800000, fuel: "Petrol", seats: 5 },
+            { name: "Ferrari Roma", type: "Supercar", price: 37600000, fuel: "Petrol", seats: 2 },
+            { name: "Rolls-Royce Ghost", type: "Luxury", price: 69500000, fuel: "Petrol", seats: 4 },
+            { name: "Bugatti Chiron", type: "Hypercar", price: 210000000, fuel: "Petrol", seats: 2 }
+        ];
+
+        // --- 2. INTERACTIVE LOGIC ---
+
+        const grid = document.getElementById('carGrid');
+        const emptyState = document.getElementById('emptyState');
+        const countDisplay = document.getElementById('countDisplay');
+
+        // Initial Load
+        window.addEventListener('load', () => {
+            renderCards(fleet);
+            initParallax();
+        });
+
+        // Live Filtering System
+        function filterSystem() {
+            const typeVal = document.getElementById('type').value;
+            const fuelVal = document.getElementById('fuel').value;
+            const budgetVal = parseInt(document.getElementById('budgetRange').value);
+
+            // Filter logic
+            const filtered = fleet.filter(car => {
+                // Special handling for "No Limit" slider max
+                const budgetCheck = budgetVal === 50000000 ? true : car.price <= budgetVal;
+                
+                return (
+                    (typeVal === "" || car.type === typeVal) &&
+                    budgetCheck &&
+                    (fuelVal === "" || car.fuel === fuelVal)
+                );
+            });
+
+            renderCards(filtered);
+        }
+
+        // Budget Slider Updater
+        function updateBudgetDisplay(val) {
+            const display = document.getElementById('budgetValue');
+            if(val == 50000000) {
+                display.innerText = "No Limit";
+                display.style.color = "#fff";
+            } else {
+                display.innerText = formatPrice(val);
+                display.style.color = "var(--accent)";
+            }
+        }
+
+        // --- 3. RENDERING ENGINE ---
+
+        function renderCards(data) {
+            grid.innerHTML = '';
+            countDisplay.innerText = data.length;
+
+            if (data.length === 0) {
+                emptyState.style.display = 'block';
+                return;
+            } else {
+                emptyState.style.display = 'none';
+            }
+
+            data.forEach((car, index) => {
+                const card = document.createElement('div');
+                card.className = 'car-card';
+                card.style.animation = `fadeUp 0.6s ease forwards ${index * 0.05}s`;
+
+                // Smart Thumbnail Fetcher
+                const query = encodeURIComponent(car.name + " car exterior wallpaper 4k");
+                // Using Bing Thumbnail API for reliability
+                const imgUrl = `https://tse2.mm.bing.net/th?q=${query}&w=500&h=400&c=7&rs=1&p=0`;
+
+                card.innerHTML = `
+                    <div class="card-inner">
+                        <div class="img-container">
+                            <div class="badge">${car.type}</div>
+                            <img src="${imgUrl}" class="car-img" alt="${car.name}" loading="lazy">
+                            <div class="overlay-gradient"></div>
+                        </div>
+                        <div class="info-container">
+                            <div>
+                                <h3 class="car-title">${car.name}</h3>
+                                <div class="specs-row">
+                                    <span>${car.fuel}</span>
+                                    <span>•</span>
+                                    <span>${car.seats} Seats</span>
+                                </div>
+                            </div>
+                            <div class="price-row">
+                                <div class="price">${formatPrice(car.price)}</div>
+                                <div class="action-icon">➜</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                // Attach 3D Tilt Event
+                card.addEventListener('mousemove', handleTilt);
+                card.addEventListener('mouseleave', resetTilt);
+
+                grid.appendChild(card);
+            });
+        }
+
+        // Price Formatter (Indian Lakhs/Crores)
+        function formatPrice(price) {
+            if (price >= 10000000) return "₹" + (price / 10000000).toFixed(2) + " Cr";
+            if (price >= 100000) return "₹" + (price / 100000).toFixed(2) + " L";
+            return "₹" + price.toLocaleString("en-IN");
+        }
+
+        // --- 4. MOTION GRAPHICS ENGINE ---
+
+        // 3D Tilt Effect
+        function handleTilt(e) {
+            const card = this;
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left; // x position within the element
+            const y = e.clientY - rect.top;  // y position within the element
+            
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            
+            const rotateX = ((y - centerY) / centerY) * -5; // Max rotation deg
+            const rotateY = ((x - centerX) / centerX) * 5;
+
+            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+        }
+
+        function resetTilt() {
+            this.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+        }
+
+        // Parallax Background
+        function initParallax() {
+            const bg = document.getElementById('ambientBg');
+            const heroTitle = document.getElementById('heroTitle');
+            
+            document.addEventListener('mousemove', (e) => {
+                const x = (window.innerWidth - e.pageX * 2) / 100;
+                const y = (window.innerHeight - e.pageY * 2) / 100;
+                
+                bg.style.transform = `translateX(${x}px) translateY(${y}px)`;
+                heroTitle.style.transform = `translateX(${x * 0.5}px) translateY(${y * 0.5}px)`;
+            });
+        }
+    </script>
+</body>
+</html>
